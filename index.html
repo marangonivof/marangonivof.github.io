@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Marangoni-Driven Flow in Liquid Metal | PAMIR 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:#180813; --bg2:#24101d; --bg3:#301628; --surface:#3b1b32;
+      --border:rgba(255,143,190,0.24); --molten:#ff4f9a; --arc:#ff9fca;
+      --cool:#ffd6e8; --text:#fff1f7; --muted:#c79aac; --accent:#ff77b7;
+      --font-display:'Playfair Display',Georgia,serif;
+      --font-body:'Space Grotesk',system-ui,sans-serif;
+      --font-mono:'Space Mono',monospace;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;scroll-padding-top:5rem}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.7;overflow-x:hidden}
+    body::before{content:'';position:fixed;top:-30vh;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse at 50% 30%,rgba(255,79,154,0.16) 0%,rgba(255,159,202,0.08) 50%,transparent 75%);pointer-events:none;z-index:0}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(24,8,19,0.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+    .nav-logo{font-family:var(--font-mono);font-size:0.75rem;color:var(--arc);letter-spacing:.12em;text-transform:uppercase}
+    .nav-links{display:flex;gap:2rem;list-style:none}
+    .nav-links a{color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:500;letter-spacing:.04em;transition:color .2s}
+    .nav-links a:hover{color:var(--text)}
+
+    /* HERO */
+    #hero{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:8rem 2rem 5rem;overflow:hidden;z-index:1}
+    .hero-tag{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--arc);margin-bottom:1.2rem}
+    h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3.4rem);font-weight:700;line-height:1.18;max-width:760px;margin-bottom:1.5rem}
+    h1 em{font-style:italic;color:var(--molten)}
+    .hero-sub{color:var(--muted);font-size:1rem;max-width:540px;margin-bottom:2.5rem}
+    .hero-authors{font-family:var(--font-mono);font-size:.78rem;color:var(--muted);letter-spacing:.06em;margin-bottom:2.5rem}
+    .hero-authors span{color:var(--text)}
+    .btn-row{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+    .btn{display:inline-block;padding:.7rem 1.6rem;border-radius:4px;font-family:var(--font-mono);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:all .2s;cursor:pointer}
+    .btn-primary{background:var(--molten);color:#fff;border:1px solid var(--molten)}
+    .btn-primary:hover{background:#ff82bd}
+    .btn-outline{background:transparent;color:var(--arc);border:1px solid var(--arc)}
+    .btn-outline:hover{background:rgba(255,159,202,.12)}
+    .conf-badge{position:absolute;top:7rem;right:2.5rem;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;text-align:right;color:var(--muted);border-right:2px solid var(--molten);padding-right:.8rem}
+    .conf-badge strong{display:block;color:var(--text);font-size:.8rem}
+
+    /* SECTIONS */
+    section{position:relative;z-index:1;padding:6rem 2rem}
+    .container{max-width:960px;margin:0 auto}
+    .section-label{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--molten);margin-bottom:.6rem}
+    h2{font-family:var(--font-display);font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:700;line-height:1.25;margin-bottom:1.5rem}
+    p{color:var(--muted);margin-bottom:1rem}
+    p strong{color:var(--text);font-weight:600}
+    .divider{width:40px;height:2px;background:var(--molten);margin:1.5rem 0}
+
+    /* ABSTRACT */
+    #abstract{background:var(--bg2);border-top:1px solid var(--border)}
+    .abstract-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--molten);border-radius:6px;padding:2.2rem 2.5rem;font-size:1.02rem;color:var(--text);line-height:1.8}
+    .intro-fig{max-width:720px;margin:2rem auto 0}
+    .intro-fig img{width:100%;display:block}
+    .kw-list{margin-top:1.2rem;display:flex;flex-wrap:wrap;gap:.5rem}
+    .kw{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .7rem;border-radius:2px;background:rgba(255,119,183,.14);border:1px solid var(--border);color:var(--arc)}
+
+    /* PHYSICS */
+    #physics{background:var(--bg)}
+    .physics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin-top:3rem}
+    .phys-card{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:1.8rem;transition:border-color .2s,transform .2s}
+    .phys-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+    .phys-icon{font-size:2rem;margin-bottom:.8rem}
+    .phys-card h3{font-family:var(--font-body);font-weight:600;font-size:1rem;margin-bottom:.5rem;color:var(--text)}
+    .phys-card p{font-size:.9rem;margin:0}
+
+    /* METHODOLOGY */
+    #methodology{background:var(--bg2);border-top:1px solid var(--border)}
+    .method-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+    @media(max-width:680px){.method-layout{grid-template-columns:1fr}}
+    .eq-block{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:1.4rem 1.6rem;margin:1.2rem 0;font-family:var(--font-mono);font-size:.9rem;color:var(--cool);overflow-x:auto}
+    .eq-block .eq-label{font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+    .param-table{width:100%;border-collapse:collapse;margin-top:1rem}
+    .param-table th{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:.5rem .8rem;border-bottom:1px solid var(--border);text-align:left}
+    .param-table td{font-size:.88rem;padding:.55rem .8rem;border-bottom:1px solid rgba(255,143,190,.10);color:var(--text)}
+    .param-table td:first-child{font-family:var(--font-mono);color:var(--arc);font-size:.82rem}
+
+    /* figure image cards */
+    .fig-card{border:1px solid var(--border);border-radius:6px;overflow:hidden;background:#fff}
+    .fig-card img{width:100%;display:block}
+    .fig-stack{display:grid;gap:1rem;padding:1rem;background:#fff}
+    .fig-stack img{border:1px solid rgba(36,16,29,.16);border-radius:4px}
+    .fig-caption{font-size:.75rem;color:var(--muted);text-align:center;padding:.6rem 1rem;background:var(--bg3);border-top:1px solid var(--border)}
+
+    /* RESULTS */
+    #results{background:var(--bg)}
+    .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:3rem;align-items:stretch}
+    @media(max-width:700px){.results-grid{grid-template-columns:1fr}}
+    .result-card{background:var(--bg3);border:1px solid var(--border);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+    .result-card:hover{transform:translateY(-6px) scale(1.012);border-color:var(--accent);box-shadow:0 18px 44px rgba(255,79,154,.16)}
+    .result-card-header{padding:1.2rem 1.5rem 0}
+    .result-card-header h3{font-size:.95rem;font-weight:600;color:var(--text);margin-bottom:.3rem}
+    .result-card-header p{font-size:.85rem;margin:0 0 1rem}
+    .result-card .fig-card{border-radius:0;border:none;border-top:1px solid var(--border);flex:1;display:flex;flex-direction:column}
+    .result-card .fig-stack{flex:1}
+    .fig-stack-balanced{grid-template-rows:1fr 1fr;gap:1.7rem}
+    .fig-stack-balanced img{height:100%;object-fit:contain}
+
+    /* full-width result */
+    .result-card-wide{background:var(--bg3);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:2rem;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+    .result-card-wide:hover{transform:translateY(-6px) scale(1.01);border-color:var(--accent);box-shadow:0 18px 44px rgba(255,79,154,.16)}
+    .result-card-wide .result-card-header{padding:1.5rem 1.5rem 0}
+    .result-card-wide .fig-card{border-radius:0;border:none;border-top:1px solid var(--border)}
+
+    /* FINDINGS */
+    #findings{background:var(--bg2);border-top:1px solid var(--border)}
+    .findings-list{counter-reset:finding;list-style:none;display:grid;gap:1.2rem;margin-top:2.5rem}
+    .findings-list li{counter-increment:finding;display:flex;gap:1.4rem;align-items:flex-start}
+    .findings-list li::before{content:counter(finding,decimal-leading-zero);font-family:var(--font-mono);font-size:.78rem;color:var(--molten);min-width:30px;padding-top:.12rem;flex-shrink:0}
+    .finding-text{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:1rem 1.4rem;flex:1;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+    .findings-list li:hover .finding-text{transform:translateY(-4px) scale(1.015);border-color:var(--accent);box-shadow:0 16px 38px rgba(255,79,154,.16)}
+    .finding-text strong{color:var(--text)}
+    .finding-text p{font-size:.92rem;margin:0}
+
+    /* TEAM */
+    #team{background:var(--bg)}
+    .authors-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.2rem;margin-top:2.5rem}
+    .author-card{display:block;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:1.2rem;text-align:center;color:inherit;text-decoration:none;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+    .author-card:hover{transform:translateY(-6px) scale(1.025);border-color:var(--accent);box-shadow:0 18px 44px rgba(255,79,154,.16)}
+    .author-card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+    .author-avatar{width:48px;height:48px;border-radius:50%;margin:0 auto .8rem;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:1rem;font-weight:700;background:var(--surface);border:2px solid var(--border);color:var(--arc)}
+    .author-card h4{font-size:.9rem;font-weight:600;margin-bottom:.2rem}
+    .author-card p{font-size:.75rem;margin:0}
+    .author-card.corresponding{border-color:var(--molten)}
+    .author-card.corresponding .author-avatar{border-color:var(--molten);color:var(--molten)}
+    .affiliations{margin-top:2rem;padding:1.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:6px;font-size:.85rem;color:var(--muted)}
+    .affiliations p{margin-bottom:.4rem}
+
+    /* CONFERENCE */
+    #conference{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+    .conf-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-top:2rem}
+    .conf-stat{text-align:center;padding:2rem 1.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:6px}
+    .conf-stat .value{font-family:var(--font-mono);font-size:1.6rem;font-weight:700;color:var(--molten);display:block}
+    .conf-stat .label{font-size:.82rem;color:var(--muted);margin-top:.3rem}
+
+    /* FOOTER */
+    footer{position:relative;z-index:1;padding:3rem 2rem;text-align:center;border-top:1px solid var(--border)}
+    footer .footer-logo{font-family:var(--font-mono);font-size:.75rem;letter-spacing:.18em;color:var(--arc);margin-bottom:.8rem}
+    footer p{font-size:.82rem;color:var(--muted);margin:.2rem 0}
+
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+    .reveal.visible{opacity:1;transform:none}
+    @media(max-width:720px){
+      html{scroll-padding-top:6.5rem}
+      body{font-size:15px}
+      body::before{width:520px;height:420px;top:-18vh}
+      nav{align-items:flex-start;gap:.75rem;padding:.75rem 1rem;flex-direction:column}
+      .nav-logo{font-size:.68rem;line-height:1.2}
+      .nav-links{width:100%;gap:.9rem;overflow-x:auto;padding-bottom:.15rem;scrollbar-width:none}
+      .nav-links::-webkit-scrollbar{display:none}
+      .nav-links a{font-size:.76rem;white-space:nowrap}
+      #hero{min-height:auto;padding:8rem 1.1rem 4rem}
+      h1{font-size:clamp(2rem,12vw,2.7rem);max-width:100%}
+      h2{font-size:clamp(1.55rem,9vw,2.1rem)}
+      .hero-sub,.hero-authors{max-width:100%;margin-bottom:1.8rem}
+      .hero-authors{font-size:.72rem;line-height:1.8}
+      .btn-row{width:100%}
+      .btn{flex:1 1 100%;text-align:center;padding:.75rem 1rem}
+      .conf-badge{display:none}
+      section{padding:4rem 1rem}
+      .abstract-card{padding:1.35rem 1.2rem;font-size:.95rem;line-height:1.75}
+      .intro-fig{max-width:100%;margin-top:1.5rem}
+      .physics-grid,.authors-grid,.conf-info{grid-template-columns:1fr;gap:1rem;margin-top:2rem}
+      .phys-card,.author-card,.conf-stat{padding:1.2rem}
+      .method-layout,.results-grid{grid-template-columns:1fr;gap:1.3rem}
+      .eq-block{padding:1rem;font-size:.78rem}
+      .param-table{display:block;overflow-x:auto;white-space:nowrap}
+      .fig-card{overflow-x:auto}
+      .fig-stack{gap:.8rem;padding:.75rem}
+      .fig-stack-balanced{grid-template-rows:auto;gap:1rem}
+      .fig-stack-balanced img{height:auto}
+      .result-card-header,.result-card-wide .result-card-header{padding:1rem 1rem 0}
+      .result-card-header p{font-size:.82rem}
+      .result-card-wide .fig-card>img{min-width:720px}
+      .fig-caption{font-size:.68rem;padding:.55rem .8rem}
+      .findings-list{gap:1rem;margin-top:2rem}
+      .findings-list li{gap:.75rem}
+      .finding-text{padding:.9rem 1rem}
+      .affiliations{padding:1rem;font-size:.8rem}
+    }
+    @media(max-width:420px){
+      #hero{padding-top:7.5rem}
+      .section-label{font-size:.62rem;letter-spacing:.15em}
+      .kw{font-size:.64rem;padding:.28rem .55rem}
+      .result-card-wide .fig-card>img{min-width:640px}
+    }
+    @media(hover:none){
+      .phys-card:hover,.result-card:hover,.result-card-wide:hover,.author-card:hover,.findings-list li:hover .finding-text{transform:none}
+    }
+
+    /* pink-toned image panels */
+    .fig-card{box-shadow:0 14px 38px rgba(255,79,154,.10)}
+    .result-card,.result-card-wide,.phys-card,.author-card,.conf-stat,.finding-text{box-shadow:0 10px 30px rgba(255,79,154,.055)}
+    .fig-card img{background:#fff7fb}
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">Marangoni · PAMIR 2026</span>
+  <ul class="nav-links">
+    <li><a href="#abstract">Abstract</a></li>
+    <li><a href="#methodology">Model</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#findings">Conclusions</a></li>
+    <li><a href="#team">Team</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="conf-badge">
+    <strong>PAMIR 2026</strong>
+    14th International Conference<br>
+    Fundamental &amp; Applied MHD<br>
+    July 6–9 · Leoben, Austria
+  </div>
+
+  <p class="hero-tag">PAMIR 2026 · Computational MHD</p>
+  <h1>Marangoni-Driven Flow of <em>Liquid Metal</em> Under Localized Heating</h1>
+  <p class="hero-sub">A VOF-based numerical investigation of thermocapillary convection at a liquid aluminium–gas interface driven by Gaussian arc-like heating.</p>
+  <p class="hero-authors"><span>Saloni Kansal</span> · Ali Fakhreddine · Mohamad Al Nasser · Magdalena Schatzl · <span>Abdellah Kharicha</span></p>
+  <div class="btn-row">
+    <a class="btn btn-primary" href="#results">Explore Results</a>
+    <a class="btn btn-outline" href="#abstract">Read Abstract</a>
+  </div>
+</section>
+
+<!-- ABSTRACT -->
+<section id="abstract">
+  <div class="container reveal">
+    <p class="section-label">Abstract</p>
+    <h2>Surface-tension gradients powering <em>interfacial flow</em></h2>
+    <div class="divider"></div>
+    <div class="abstract-card">
+      When a plasma or electric arc interacts with a liquid metal surface, intense localized heating can generate strong interfacial temperature gradients and surface-tension-driven flow. In this work, simulations are carried out for a liquid aluminium–gas interface using a <strong>VOF-based numerical model</strong> to study thermocapillary flow under localized heating. A Gaussian heat source is applied near the interface to represent localized thermal heating caused by plasma or arc interaction. Temperature-dependent surface tension is included to capture Marangoni stresses.
+      <br/><br/>
+      The results indicate that, as the imposed heat flux increases, the reduction of surface tension near the heated region becomes more pronounced, leading to <strong>stronger Marangoni forcing</strong> along the liquid–gas interface. This enhances outward interfacial flow and promotes lateral heat redistribution.
+      <div class="kw-list">
+        <span class="kw">Aluminium</span><span class="kw">Electric Arcs</span>
+        <span class="kw">Marangoni Convection</span><span class="kw">Surface Tension</span>
+        <span class="kw">Thermocapillary Flow</span><span class="kw">VOF</span><span class="kw">OpenFOAM</span>
+      </div>
+    </div>
+    <div class="fig-card intro-fig">
+      <img src="figures/intro_fig.png" alt="Introductory Marangoni-driven liquid metal flow figure"/>
+      <div class="fig-caption">Marangoni-driven flow under localized heating</div>
+    </div>
+  </div>
+</section>
+
+<!-- PHYSICS -->
+<section id="physics">
+  <div class="container reveal">
+    <p class="section-label">Physical Mechanism</p>
+    <h2>Three steps from arc to flow</h2>
+    <div class="divider"></div>
+    <div class="physics-grid">
+      <div class="phys-card">
+        <div class="phys-icon">⚡</div>
+        <h3>Localized Arc Heating</h3>
+        <p>A plasma or electric arc deposits energy over a concentrated region of the free surface, creating a non-uniform temperature field along the interface.</p>
+      </div>
+      <div class="phys-card">
+        <div class="phys-icon">📉</div>
+        <h3>Surface-Tension Gradient</h3>
+        <p>Since surface tension in liquid aluminium decreases linearly with temperature, the hot central zone has lower σ than the cooler peripheral regions.</p>
+      </div>
+      <div class="phys-card">
+        <div class="phys-icon">🌀</div>
+        <h3>Marangoni Convection</h3>
+        <p>The tangential stress imbalance drives fluid outward from the centre, forming two symmetric recirculation cells that redistribute heat laterally.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section id="methodology">
+  <div class="container reveal">
+    <p class="section-label">Numerical Model</p>
+    <h2>VOF simulation in <em>OpenFOAM</em></h2>
+    <div class="divider"></div>
+    <div class="method-layout">
+      <div>
+        <p><strong>Computational domain:</strong> 2D square enclosure, L = 20 mm. The lower half is initialised with liquid aluminium; the upper half contains aluminium vapour. All walls are adiabatic; gravity is neglected to isolate thermocapillary effects.</p>
+        <div class="eq-block">
+          <div class="eq-label">Surface tension — Eq. 1</div>
+          σ = 0.890 − 1.82 × 10⁻⁴ (T − 933.15)
+        </div>
+        <div class="eq-block">
+          <div class="eq-label">Gaussian heat source — Eq. 2</div>
+          q(x,t) = q<sub style="font-size:.75em">peak</sub> · exp[−½((x−x₀)/σₓ)²] · a<sub style="font-size:.75em">int</sub>
+        </div>
+        <p>Three peak heat-flux cases:</p>
+        <table class="param-table">
+          <thead><tr><th>Case</th><th>q<sub>peak</sub></th><th>Colour</th></tr></thead>
+          <tbody>
+            <tr><td>Low</td><td>1 × 10⁵ W m⁻²</td><td style="color:var(--cool)">■ teal</td></tr>
+            <tr><td>Mid</td><td>5 × 10⁵ W m⁻²</td><td style="color:var(--arc)">■ blue</td></tr>
+            <tr><td>High</td><td>1 × 10⁶ W m⁻²</td><td style="color:var(--molten)">■ orange</td></tr>
+          </tbody>
+        </table>
+        <br/>
+        <p><strong>Liquid Al properties:</strong> μ = 1.3×10⁻³ Pa·s, k = 95.37 W m⁻¹K⁻¹, C<sub>p</sub> = 1080 J kg⁻¹K⁻¹.</p>
+      </div>
+      <div>
+        <div class="fig-card">
+          <img alt="Gaussian interface heating profile" src="figures/gaussian_interface.png"/>
+          <div class="fig-caption">Gaussian interface heating profile</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results">
+  <div class="container reveal">
+    <p class="section-label">Results &amp; Discussion</p>
+    <h2>Heat flux shapes flow — and <em>flow reshapes heat</em></h2>
+    <div class="divider"></div>
+
+    <div class="results-grid">
+      <div class="result-card">
+        <div class="result-card-header">
+          <h3>Temperature &amp; Surface-Tension Profiles</h3>
+          <p>Interfacial temperature and surface-tension distributions with and without Marangoni convection, at t = 5 s for all three heat fluxes. Marangoni convection broadens the temperature profile and lowers the peak.</p>
+        </div>
+        <div class="fig-card">
+          <div class="fig-stack">
+            <img alt="Interfacial temperature profile" src="figures/interfacial_temp_temperature.png"/>
+            <img alt="Surface tension profile" src="figures/interfacial_temp_surface_tension.png"/>
+          </div>
+          <div class="fig-caption">Interfacial temperature and surface tension profiles</div>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-card-header">
+          <h3>Temperature Contours (q = 1×10⁶ W m⁻²)</h3>
+          <p>Without Marangoni forcing, isotherms remain concentrated around the heat source (left). With Marangoni convection, lateral interfacial motion extends the isotherms horizontally (right).</p>
+        </div>
+        <div class="fig-card">
+          <div class="fig-stack fig-stack-balanced">
+            <img alt="Temperature contours without Marangoni convection" src="figures/temp_contours_without_marangoni.png"/>
+            <img alt="Temperature contours with Marangoni convection" src="figures/temp_contours_with_marangoni.png"/>
+          </div>
+          <div class="fig-caption">Temperature contours without and with Marangoni convection</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-card-wide">
+      <div class="result-card-header">
+        <h3>Marangoni-Driven Velocity Field &amp; Interfacial Velocity</h3>
+        <p>Left: two symmetric recirculation cells at q = 1×10⁵ W m⁻². Right: time-averaged horizontal velocity U̅ₓ along the interface for all three flux cases — velocity magnitude scales with imposed flux.</p>
+      </div>
+      <div class="fig-card">
+        <img alt="Velocity field and interfacial velocity profiles" src="figures/velocity_field.png"/>
+        <div class="fig-caption">Velocity field (a) and interfacial U̅ₓ profiles (b)</div>
+      </div>
+    </div>
+
+    <div class="result-card-wide" style="margin-top:2rem">
+      <div class="result-card-header">
+        <h3>Normalized Velocity Profiles Along Liquid Height</h3>
+        <p>Profiles at x = 5 mm (a) and x = 15 mm (b) confirm opposite flow directions — evidence of two counter-rotating Marangoni cells, with outward surface flow balanced by a return flow at depth.</p>
+      </div>
+      <div class="fig-card">
+        <img alt="Normalized horizontal velocity profiles" src="figures/norm_velocity_profile.png"/>
+        <div class="fig-caption">Normalized U<sub>x</sub>/|U<sub>x</sub>|<sub>max</sub> at x = 5 mm (a) and x = 15 mm (b)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINDINGS -->
+<section id="findings">
+  <div class="container reveal">
+    <p class="section-label">Conclusions</p>
+    <h2>What the simulations tell us</h2>
+    <div class="divider"></div>
+    <ol class="findings-list">
+      <li><div class="finding-text"><p><strong>Peak temperature and minimum surface tension at the heated centre.</strong> The Gaussian heat source creates a pronounced thermal maximum where σ reaches its minimum, establishing the outward driving force.</p></div></li>
+      <li><div class="finding-text"><p><strong>Two symmetric counter-rotating recirculation cells.</strong> Near-interface flow is directed outward; mass conservation is satisfied by a return flow deeper in the liquid.</p></div></li>
+      <li><div class="finding-text"><p><strong>Higher heat flux → stronger Marangoni-driven motion.</strong> Velocity magnitudes scale with imposed heat flux because a larger thermal gradient produces a proportionally stronger surface-tension imbalance.</p></div></li>
+      <li><div class="finding-text"><p><strong>Marangoni convection promotes lateral heat redistribution.</strong> Compared to conduction-only cases, thermocapillary flow broadens the temperature profile and reduces peak temperature — critical for accurate melt-pool modelling.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="container reveal">
+    <p class="section-label">Research Team</p>
+    <h2>Authors</h2>
+    <div class="divider"></div>
+    <div class="authors-grid">
+      <a class="author-card corresponding" href="https://smmp.unileoben.ac.at/team/saloni-kansal" target="_blank" rel="noopener noreferrer"><div class="author-avatar">SK</div><h4>Saloni Kansal</h4><p>K1-MET GmbH &amp; MU Leoben</p></a>
+      <a class="author-card" href="https://online.unileoben.ac.at/mu_online/pl/ui/$ctx/visitenkarte.show_vcard?pPersonenId=B15D168FB0E9E163&pPersonenGruppe=3" target="_blank" rel="noopener noreferrer"><div class="author-avatar">AF</div><h4>Ali Fakhreddine</h4><p>MU Leoben</p></a>
+      <a class="author-card" href="https://online.unileoben.ac.at/mu_online/pl/ui/$ctx/visitenkarte.show_vcard?pPersonenId=09253F473BB23B25&pPersonenGruppe=3" target="_blank" rel="noopener noreferrer"><div class="author-avatar">MN</div><h4>Mohamad Al Nasser</h4><p>MU Leoben</p></a>
+      <a class="author-card" href="https://oepg.at/de/news/2026-01-11-physikerin-des-monats-magdalena-schatzl" target="_blank" rel="noopener noreferrer"><div class="author-avatar">MS</div><h4>Magdalena Schatzl</h4><p>K1-MET GmbH</p></a>
+      <a class="author-card corresponding" href="https://online.unileoben.ac.at/mu_online/visitenkarte.show_vcard?pPersonenId=FD487E4F1FD39822&pPersonenGruppe=3" target="_blank" rel="noopener noreferrer"><div class="author-avatar">AK</div><h4>Abdellah Kharicha</h4><p>MU Leoben · SMMP Chair</p></a>
+    </div>
+    <div class="affiliations">
+      <p>¹ <strong>Chair of Simulation and Modeling of Metallurgical Processes (SMMP)</strong>, Department of Metallurgy, Montanuniversität Leoben, Franz-Josef-Strasse 18, 8700 Leoben, Austria</p>
+      <p>² <strong>K1-MET GmbH</strong>, Metallurgical Competence Center, Leoben, Austria</p>
+      <p style="margin-top:.8rem;font-size:.8rem;">Contact: <a href="mailto:saloni.kansal@k1-met.com" style="color:var(--arc)">saloni.kansal@k1-met.com</a> · <a href="mailto:abdellah.kharicha@unileoben.ac.at" style="color:var(--arc)">abdellah.kharicha@unileoben.ac.at</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- CONFERENCE -->
+<section id="conference">
+  <div class="container reveal">
+    <p class="section-label">Venue</p>
+    <h2>14th PAMIR International Conference</h2>
+    <div class="divider"></div>
+    <p>Fundamental and Applied MHD — bringing together researchers in magnetohydrodynamics, metallurgy, and plasma physics.</p>
+    <div class="conf-info">
+      <div class="conf-stat"><span class="value">14th</span><div class="label">Edition of PAMIR</div></div>
+      <div class="conf-stat"><span class="value">Jul 6–9</span><div class="label">2026 · Leoben, Austria</div></div>
+      <div class="conf-stat"><span class="value">OpenFOAM</span><div class="label">Simulation platform</div></div>
+      <div class="conf-stat"><span class="value">3</span><div class="label">Heat-flux cases studied</div></div>
+    </div>
+    <div style="margin-top:2rem;padding:1.2rem 1.5rem;background:var(--bg3);border:1px solid var(--border);border-radius:6px;font-size:.85rem;color:var(--muted);">
+      <strong style="color:var(--text);">Acknowledgements.</strong> Funding from K1-MET GmbH, supported by COMET (Federal Ministry for Climate Action; Federal Ministry for Digital and Economic Affairs; States of Upper Austria, Tyrol and Styria; SFG) and Montanuniversität Leoben.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">PAMIR · 2026 · LEOBEN</div>
+  <p>Marangoni-Driven Flow of Liquid Metal Under Localized Heating</p>
+  <p>Kansal · Fakhreddine · Al Nasser · Schatzl · Kharicha</p>
+  <p style="margin-top:1rem;font-size:.74rem;">Montanuniversität Leoben &amp; K1-MET GmbH, Austria</p>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)} });
+  },{threshold:0.08});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
